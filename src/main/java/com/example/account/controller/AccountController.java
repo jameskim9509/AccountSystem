@@ -19,11 +19,11 @@ public class AccountController {
         return redisTestService.getLock();
     }
 
-    @GetMapping("/create-account")
-    public String createAccount() {
-        accountService.createAccount();
-        return "success";
-    }
+//    @GetMapping("/create-account")
+//    public String createAccount() {
+//        accountService.createAccount();
+//        return "success";
+//    }
 
     @GetMapping("/account/{id}")
     public Account getAccount(
