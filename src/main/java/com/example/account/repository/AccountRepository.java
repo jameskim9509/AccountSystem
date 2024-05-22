@@ -32,13 +32,20 @@ public class AccountRepository {
                 .getResultList();
     }
 
-    // 정책 예외처리 필요, 실패 응답 필요
-    public Account findByUserIdAndAccountNumber(Long userId, String accountNumber)
+    public List<Account> findByAccountNumber(String accountNumber)
+    {
+        String jpql = "select a from Account a where a.accountNumber=:accountNumber";
+        return em.createQuery(jpql, Account.class)
+                .setParameter("accountNumber", accountNumber)
+                .getResultList();
+    }
+
+    public List<Account> findByUserIdAndAccountNumber(Long userId, String accountNumber)
     {
         String jpql = "select a from Account a join a.accountUser u on u.id=:userId and a.accountNumber=:accountNumber";
         return em.createQuery(jpql, Account.class)
             .setParameter("userId", userId)
             .setParameter("accountNumber", accountNumber)
-            .getSingleResult();
+            .getResultList();
     }
 }

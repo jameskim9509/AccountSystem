@@ -1,27 +1,12 @@
 package com.example.account.service;
 
 import com.example.account.domain.Account;
-import com.example.account.domain.AccountStatus;
-import com.example.account.repository.AccountRepository;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 //@ExtendWith(MockitoExtension.class)
@@ -54,7 +39,7 @@ class AccountServiceTest {
         Long accountId2 = accountService.createAccount(1L, 0L);
 
         Account findAccount = accountService.getAccount(accountId1);
-        accountService.deleteAccount(1L, findAccount.getAccountNumber());
+        accountService.unregisterAccount(1L, findAccount.getAccountNumber());
 
         Assertions.assertThat(accountService.getAccount(accountId1)).isNull();
     }

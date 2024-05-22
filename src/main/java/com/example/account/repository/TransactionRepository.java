@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 
 @Repository
 public class TransactionRepository {
@@ -16,21 +17,22 @@ public class TransactionRepository {
         return transaction.getId();
     }
 
-    public Transaction findTransactionByUserIdAndAccountNumberAndAmount(Long userId, String accountNumber, Long amount)
-    {
-        String jpql = "select t from Transaction t join t.account a on a.id=:userId and a.accountNumber=:accountNumber where t.amount=:amount";
-        return em.createQuery(jpql, Transaction.class)
-                .setParameter("userId", userId)
-                .setParameter("accountNumber", accountNumber)
-                .setParameter("amount", amount)
-                .getSingleResult();
-    }
+//    public List<Transaction> findTransactionByTransactionIdAndAccountNumberAndAmount(String transactionId, String accountNumber, Long amount)
+//    {
+//        String jpql = "select t from Transaction t join t.account a on a.accountNumber=:accountNumber" +
+//                " where t.transactionId=:transactionId and t.amount=:amount";
+//        return em.createQuery(jpql, Transaction.class)
+//                .setParameter("transactionId", transactionId)
+//                .setParameter("accountNumber", accountNumber)
+//                .setParameter("amount", amount)
+//                .getResultList();
+//    }
 
-    public Transaction findByTransactionId(String transactionId)
+    public List<Transaction> findByTransactionId(String transactionId)
     {
         String jpql = "select t from Transaction t where t.transactionId=:transactionId";
         return em.createQuery(jpql, Transaction.class)
                 .setParameter("transactionId", transactionId)
-                .getSingleResult();
+                .getResultList();
     }
 }
