@@ -15,7 +15,7 @@ public class CreateTransactionForm {
     @Getter
     public static class RequestForm
     {
-        @NotNull
+        @NotNull @Min(1)
         Long userId;
         @NotBlank
         String accountNumber;

@@ -13,10 +13,10 @@ public class AccountRepository {
     @PersistenceContext
     private EntityManager em;
 
-    public Long save(Account account)
+    public Account save(Account account)
     {
         em.persist(account);
-        return account.getId();
+        return account;
     }
 
     public Account findById(Long accountId)

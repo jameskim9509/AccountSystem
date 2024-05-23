@@ -26,8 +26,7 @@ public class AccountController {
     @PostMapping("/account")
     public Object createAccount(@RequestBody @Valid CreateAccountForm.RequestForm reqForm)
     {
-        Long accountId = accountService.createAccount(reqForm.getUserId(),reqForm.getInitBalance());
-        Account createdAccount = accountService.getAccount(accountId);
+        Account createdAccount = accountService.createAccount(reqForm.getUserId(),reqForm.getInitBalance());
         return CreateAccountForm.ResponseForm.builder()
                 .userId(createdAccount.getAccountUser().getId())
                 .accountNumber(createdAccount.getAccountNumber())

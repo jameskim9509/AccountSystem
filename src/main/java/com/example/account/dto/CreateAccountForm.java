@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -11,7 +12,7 @@ public class CreateAccountForm {
     @Getter
     public static class RequestForm
     {
-        @NotNull
+        @NotNull @Min(1)
         Long userId;
         @NotNull
         Long initBalance;

@@ -28,12 +28,13 @@ public class AccountService {
 
     //--------------------------------------Account----------------------------------------------------
     @Transactional
-    public Long createAccount(Long userId, Long initBalance) {
+    public Account createAccount(Long userId, Long initBalance) {
+        //Refactoring 필요
         AccountUser accountUser = accountUserRepository.findById(userId);
-        if(accountUser == null) throw new UserNotFoundException("사용자가 없습니다.");
+        if(accountUser == null) throw new AccountException(ErrorCode.USER_NOT_FOUND);
 
-        if(getAccountByUserId(userId).size() > 10)
-            throw new FullAccountException("보유 가능 계좌의 수를 초과했습니다.");
+        if(getAccountByUserId(userId).size() >= 10)
+            throw new AccountException(ErrorCode.FULL_ACCOUNT);
 
         Account account = Account.builder()
                 .accountUser(accountUser)
@@ -47,21 +48,14 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
-    @Transactional
-    public Account getAccount(Long accountId)
-    {
-        return accountRepository.findById(accountId);
-    }
+//    @Transactional
+//    public Account getAccount(Long accountId)
+//    {
+//        return accountRepository.findById(accountId);
+//    }
 
     @Transactional
     public List<Account> getAccountByUserId(Long userId) {
-        if(userId < 0){
-            throw new RuntimeException("Minus");
-        }
-
-        AccountUser accountUser = accountUserRepository.findById(userId);
-        if(accountUser == null) throw new UserNotFoundException("사용자가 없습니다.");
-
         return accountRepository.findByUserId(userId)
                 .stream().filter(a -> a.getAccountStatus()==AccountStatus.IN_USE).collect(Collectors.toList());
     }
@@ -70,16 +64,16 @@ public class AccountService {
     public Account unregisterAccount(Long userId, String accountNumber)
     {
         AccountUser findUser = accountUserRepository.findById(userId);
-        if(findUser == null) throw new UserNotFoundException("사용자가 없습니다.");
+        if(findUser == null) throw new AccountException(ErrorCode.USER_NOT_FOUND);
 
         List<Account> accountList = accountRepository.findByUserIdAndAccountNumber(userId, accountNumber);
-        if(accountList.size() == 0) throw new AccountNotFoundException("해당하는 계좌가 없습니다.");
+        if(accountList.size() == 0) throw new AccountException(ErrorCode.ACCOUNT_NOT_FOUND);
 
         Account findAccount = accountList.get(0);
         if(findAccount.getAccountStatus() == AccountStatus.UNREGISTERED)
-            throw new FoundUnregisteredAccountException("이미 해지된 계좌입니다.");
+            throw new AccountException(ErrorCode.CANCELED_TRANSACTION);
 
-        if(findAccount.getBalance() > 0) throw new FoundBalanceException("해당 계좌에 잔액이 존재합니다.");
+        if(findAccount.getBalance() > 0) throw new AccountException(ErrorCode.FOUND_BALANCE);
 
         findAccount.setAccountStatus(AccountStatus.UNREGISTERED);
         findAccount.setUnregisteredAt(LocalDateTime.now());
@@ -94,7 +88,7 @@ public class AccountService {
     {
         List<Transaction> transactionList = transactionRepository.findByTransactionId(transactionId);
         if(transactionList.size() == 0)
-            throw new TransactionNotFoundException("해당하는 거래가 없습니다.");
+            throw new AccountException(ErrorCode.TRANSACTION_NOT_FOUND);
 
         return transactionList.get(0);
     }
@@ -104,17 +98,17 @@ public class AccountService {
     public Transaction createTransaction(Long userId, String accountNumber, Long amount)
     {
         AccountUser findUser = accountUserRepository.findById(userId);
-        if(findUser == null) throw new UserNotFoundException("사용자가 없습니다.");
+        if(findUser == null) throw new AccountException(ErrorCode.USER_NOT_FOUND);
 
         List<Account> accountList = accountRepository.findByUserIdAndAccountNumber(userId, accountNumber);
-        if(accountList.size() == 0) throw new AccountNotFoundException("해당하는 계좌가 없습니다.");
+        if(accountList.size() == 0) throw new AccountException(ErrorCode.ACCOUNT_NOT_FOUND);
 
         Account findAccount = accountList.get(0);
         if(findAccount.getAccountStatus() == AccountStatus.UNREGISTERED)
-            throw new FoundUnregisteredAccountException("이미 해지된 계좌입니다.");
+            throw new AccountException(ErrorCode.UNREGISTERED_ACCOUNT);
 
         if(findAccount.getBalance() < amount)
-            throw new NotEnoughBalanceException("잔액이 부족합니다.");
+            throw new AccountException(ErrorCode.NOT_ENOUGH_BALANCE);
 
         findAccount.setBalance(findAccount.getBalance() - amount);
 
@@ -123,7 +117,7 @@ public class AccountService {
                 .transactionResultType(TransactionResultType.S)
                 .account(findAccount)
                 .amount(amount)
-                .balanceSnapshot(findAccount.getBalance())
+                .balanceSnapshot(findAccount.getBalance() + amount)
                 .transactionId(generateUUID())
                 .transactedAt(LocalDateTime.now())
                 .createdAt(LocalDateTime.now())
@@ -135,22 +129,24 @@ public class AccountService {
     }
 
     @Transactional
-    public Transaction cancelTransaction(String transactionId, String accountNumber, Long Amount)
+    public Transaction cancelTransaction(String transactionId, String accountNumber, Long amount)
     {
         List<Account> accountList = accountRepository.findByAccountNumber(accountNumber);
         if(accountList.size() == 0)
-            throw new AccountNotFoundException("해당하는 계좌가 없습니다");
+            throw new AccountException(ErrorCode.ACCOUNT_NOT_FOUND);
         Account findAccount = accountList.get(0);
 
         Transaction findTransaction = getTransaction(transactionId);
+        System.out.println(findTransaction.getAmount());
+        System.out.println(findTransaction.getAmount() - amount);
         if(findTransaction.getAccount().getAccountNumber() != findAccount.getAccountNumber())
-            throw new NotSameAccountNumberAndTransactionException("계좌와 거래가 일치하지 않습니다.");
-        else if(findTransaction.getAmount() != Amount)
-            throw new NotSameAmountException("거래 취소 금액이 일치하지 않습니다.");
+            throw new AccountException(ErrorCode.NOT_MATCH_ACCOUNT_AND_TRANSACTION);
+        else if(findTransaction.getAmount() != amount.longValue())
+            throw new AccountException(ErrorCode.NOT_MATCH_AMOUNT);
         else if(findTransaction.getTransactedAt().isBefore(LocalDateTime.now().minusYears(1)))
-            throw new OldTransactionException("1년이 지난 거래입니다.");
+            throw new AccountException(ErrorCode.OLD_TRANSACTION);
         else if(findTransaction.getTransactionType() == TransactionType.CANCEL)
-            throw new FoundCanceledTransactionException("이미 취소된 결제입니다.");
+            throw new AccountException(ErrorCode.CANCELED_TRANSACTION);
 
         findAccount.setBalance(findAccount.getBalance() + findTransaction.getAmount());
         findTransaction.setTransactionType(TransactionType.CANCEL);

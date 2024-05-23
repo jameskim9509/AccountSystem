@@ -4,13 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 public class GetAccountForm {
     @Getter
     public static class RequestForm
     {
-        @NotNull
+        @NotNull @Min(1)
         Long userId;
     }
 
