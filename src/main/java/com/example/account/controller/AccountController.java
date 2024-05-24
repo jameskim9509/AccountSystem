@@ -1,5 +1,6 @@
 package com.example.account.controller;
 
+import com.example.account.aop.AccountLock;
 import com.example.account.domain.Account;
 import com.example.account.domain.Transaction;
 import com.example.account.dto.*;
@@ -16,12 +17,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AccountController {
     private final AccountService accountService;
-    private final RedisTestService redisTestService;
-
-    @GetMapping("/get-lock")
-    public String getLock() {
-        return redisTestService.getLock();
-    }
 
     @PostMapping("/account")
     public Object createAccount(@RequestBody @Valid CreateAccountForm.RequestForm reqForm)
@@ -57,6 +52,7 @@ public class AccountController {
                 .collect(Collectors.toList());
     }
 
+    @AccountLock
     @PostMapping("/transaction/use")
     public Object createTransaction(@RequestBody @Valid CreateTransactionForm.RequestForm reqForm)
     {
@@ -70,6 +66,7 @@ public class AccountController {
                 .build();
     }
 
+    @AccountLock
     @PostMapping("/transaction/cancel")
     public Object cancelTransaction(@RequestBody @Valid CancelTransactionForm.RequestForm reqForm)
     {

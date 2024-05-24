@@ -14,19 +14,24 @@ import java.util.concurrent.TimeUnit;
 public class RedisTestService {
     private final RedissonClient redissonClient;
 
-    public String getLock() {
-        RLock lock = redissonClient.getLock("sampleLock");
-
+    public String getLock(String accountNumber) {
+        RLock lock = redissonClient.getLock(accountNumber);
         try {
-            boolean isLock = lock.tryLock(1, 5, TimeUnit.SECONDS);
+            boolean isLock = lock.tryLock(1, 100, TimeUnit.SECONDS);
             if(!isLock) {
-                log.error("======Lock acquisition failed=====");
                 return "Lock failed";
             }
         } catch (Exception e) {
             log.error("Redis lock failed");
         }
-
-        return "Lock success";
+        return "getLock";
     }
+
+    public String releaseLock(String accountNumber)
+    {
+        RLock lock = redissonClient.getLock(accountNumber);
+        lock.unlock();
+        return "releaseLock";
+    }
+
 }
