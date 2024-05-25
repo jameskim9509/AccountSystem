@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Entity
-//@ToString
 public class Account {
     @Id
     @GeneratedValue(generator = "accountGenerator")

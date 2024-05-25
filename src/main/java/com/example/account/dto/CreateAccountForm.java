@@ -9,6 +9,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 public class CreateAccountForm {
+    @Builder
     @Getter
     public static class RequestForm
     {
@@ -18,6 +19,7 @@ public class CreateAccountForm {
         Long initBalance;
     }
 
+    @Getter
     @Builder
     @AllArgsConstructor
     public static class ResponseForm

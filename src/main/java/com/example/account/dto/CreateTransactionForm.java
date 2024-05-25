@@ -4,6 +4,7 @@ import com.example.account.domain.TransactionResultType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -12,6 +13,7 @@ import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 public class CreateTransactionForm {
+    @Builder
     @Getter
     public static class RequestForm
     {
@@ -19,10 +21,11 @@ public class CreateTransactionForm {
         Long userId;
         @NotBlank
         String accountNumber;
-        @NotNull @Min(value = 1000)
+        @NotNull @Range(min = 1000, max = 500000)
         Long amount;
     }
 
+    @Getter
     @Builder
     @AllArgsConstructor
     public static class ResponseForm

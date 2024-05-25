@@ -5,8 +5,8 @@ import com.example.account.domain.Account;
 import com.example.account.domain.Transaction;
 import com.example.account.dto.*;
 import com.example.account.service.AccountService;
-import com.example.account.service.RedisTestService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 public class AccountController {
     private final AccountService accountService;
 
+    @ResponseBody
     @PostMapping("/account")
     public Object createAccount(@RequestBody @Valid CreateAccountForm.RequestForm reqForm)
     {
@@ -41,7 +42,7 @@ public class AccountController {
     }
 
     @GetMapping("/account")
-    public List<Object> getAccounts(@Valid @ModelAttribute GetAccountForm.RequestForm reqForm)
+    public List<Object> getAccounts(@ModelAttribute @Validated GetAccountForm.RequestForm reqForm)
     {
         List<Account> accountList = accountService.getAccountByUserId(reqForm.getUserId());
         return accountList.stream()
@@ -72,14 +73,16 @@ public class AccountController {
     {
         Transaction canceledTransaction = accountService.cancelTransaction(reqForm.getTransactionId(), reqForm.getAccountNumber(), reqForm.getAmount());
         return CancelTransactionForm.ResponseForm.builder()
-                .transactionId(canceledTransaction.getTransactionId())
                 .accountNumber(canceledTransaction.getAccount().getAccountNumber())
+                .transactionResult(canceledTransaction.getTransactionResultType())
+                .transactionId(canceledTransaction.getTransactionId())
                 .amount(canceledTransaction.getAmount())
+                .transactedAt(canceledTransaction.getTransactedAt())
                 .build();
     }
 
-    @GetMapping("/transaction")
-    public Object getTransaction(@ModelAttribute @Valid GetTransactionForm.RequestForm reqForm)
+    @GetMapping("/transaction/{transactionId}")
+    public Object getTransaction(@ModelAttribute @Validated GetTransactionForm.RequestForm reqForm)
     {
         Transaction findTransaction = accountService.getTransaction(reqForm.getTransactionId());
         return GetTransactionForm.ResponseForm.builder()

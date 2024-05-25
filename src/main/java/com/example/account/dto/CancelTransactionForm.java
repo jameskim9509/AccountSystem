@@ -11,6 +11,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 public class CancelTransactionForm {
+    @Builder
     @Getter
     public static class RequestForm
     {
@@ -22,6 +23,7 @@ public class CancelTransactionForm {
         Long amount;
     }
 
+    @Getter
     @Builder
     @AllArgsConstructor
     public static class ResponseForm

@@ -13,9 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -26,15 +24,13 @@ public class AccountService {
     private final AccountUserRepository accountUserRepository;
     private final TransactionRepository transactionRepository;
 
-    //--------------------------------------Account----------------------------------------------------
+    //-------------- Account -------------------
     @Transactional
     public Account createAccount(Long userId, Long initBalance) {
-        //Refactoring 필요
-        AccountUser accountUser = accountUserRepository.findById(userId);
-        if(accountUser == null) throw new AccountException(ErrorCode.USER_NOT_FOUND);
+        AccountUser accountUser = getAccountUser(userId);
 
         if(getAccountByUserId(userId).size() >= 10)
-            throw new AccountException(ErrorCode.FULL_ACCOUNT);
+                throw new AccountException(ErrorCode.FULL_ACCOUNT);
 
         Account account = Account.builder()
                 .accountUser(accountUser)
@@ -48,32 +44,54 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
-//    @Transactional
-//    public Account getAccount(Long accountId)
-//    {
-//        return accountRepository.findById(accountId);
-//    }
-
     @Transactional
-    public List<Account> getAccountByUserId(Long userId) {
-        return accountRepository.findByUserId(userId)
-                .stream().filter(a -> a.getAccountStatus()==AccountStatus.IN_USE).collect(Collectors.toList());
+    public AccountUser getAccountUser(Long userId) {
+        AccountUser accountUser = accountUserRepository.findById(userId);
+
+        if (accountUser == null)
+            throw new AccountException(ErrorCode.USER_NOT_FOUND);
+
+        return accountUser;
     }
 
     @Transactional
-    public Account unregisterAccount(Long userId, String accountNumber)
+    public List<Account> getAccountByUserId(Long userId) {
+        getAccountUser(userId);
+        return  accountRepository.findByUserId(userId).stream()
+                .filter(a -> a.getAccountStatus() == AccountStatus.IN_USE)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public Account getAccountByUserIdAndAccountNumber(Long userId,
+                                                      String accountNumber)
     {
-        AccountUser findUser = accountUserRepository.findById(userId);
-        if(findUser == null) throw new AccountException(ErrorCode.USER_NOT_FOUND);
+        List<Account> accountList = new ArrayList<>();
+        if(userId == null)
+            accountList = accountRepository.findByAccountNumber(accountNumber);
+        else
+            accountList =
+                    accountRepository.findByUserIdAndAccountNumber(userId,
+                            accountNumber);
 
-        List<Account> accountList = accountRepository.findByUserIdAndAccountNumber(userId, accountNumber);
-        if(accountList.size() == 0) throw new AccountException(ErrorCode.ACCOUNT_NOT_FOUND);
+        if (accountList.size() == 0)
+            throw new AccountException(ErrorCode.ACCOUNT_NOT_FOUND);
 
-        Account findAccount = accountList.get(0);
-        if(findAccount.getAccountStatus() == AccountStatus.UNREGISTERED)
-            throw new AccountException(ErrorCode.CANCELED_TRANSACTION);
+        if(accountList.get(0).getAccountStatus() == AccountStatus.UNREGISTERED)
+            throw new AccountException(ErrorCode.UNREGISTERED_ACCOUNT);
 
-        if(findAccount.getBalance() > 0) throw new AccountException(ErrorCode.FOUND_BALANCE);
+        return accountList.get(0);
+    }
+
+    @Transactional
+    public Account unregisterAccount(Long userId, String accountNumber) {
+        getAccountUser(userId);
+
+        Account findAccount =
+                getAccountByUserIdAndAccountNumber(userId, accountNumber);
+
+        if (findAccount.getBalance() > 0)
+            throw new AccountException(ErrorCode.FOUND_BALANCE);
 
         findAccount.setAccountStatus(AccountStatus.UNREGISTERED);
         findAccount.setUnregisteredAt(LocalDateTime.now());
@@ -81,33 +99,26 @@ public class AccountService {
         return findAccount;
     }
 
-    //------------------------------ Transaction ---------------------------------------------------
-    // 에러 처리 필요, 정책 구현 필요
+    //---------- Transaction -------------
     @Transactional
-    public Transaction getTransaction(String transactionId)
-    {
-        List<Transaction> transactionList = transactionRepository.findByTransactionId(transactionId);
-        if(transactionList.size() == 0)
+    public Transaction getTransaction(String transactionId) {
+        List<Transaction> transactionList =
+                transactionRepository.findByTransactionId(transactionId);
+        if (transactionList.size() == 0)
             throw new AccountException(ErrorCode.TRANSACTION_NOT_FOUND);
 
         return transactionList.get(0);
     }
 
-    // 에러 처리 필요, 정책 구현 필요
     @Transactional
-    public Transaction createTransaction(Long userId, String accountNumber, Long amount)
-    {
-        AccountUser findUser = accountUserRepository.findById(userId);
-        if(findUser == null) throw new AccountException(ErrorCode.USER_NOT_FOUND);
+    public Transaction createTransaction(Long userId, String accountNumber,
+                                         Long amount) {
+        getAccountUser(userId);
 
-        List<Account> accountList = accountRepository.findByUserIdAndAccountNumber(userId, accountNumber);
-        if(accountList.size() == 0) throw new AccountException(ErrorCode.ACCOUNT_NOT_FOUND);
+        Account findAccount =
+                getAccountByUserIdAndAccountNumber(userId, accountNumber);
 
-        Account findAccount = accountList.get(0);
-        if(findAccount.getAccountStatus() == AccountStatus.UNREGISTERED)
-            throw new AccountException(ErrorCode.UNREGISTERED_ACCOUNT);
-
-        if(findAccount.getBalance() < amount)
+        if (findAccount.getBalance() < amount)
             throw new AccountException(ErrorCode.NOT_ENOUGH_BALANCE);
 
         findAccount.setBalance(findAccount.getBalance() - amount);
@@ -129,23 +140,20 @@ public class AccountService {
     }
 
     @Transactional
-    public Transaction cancelTransaction(String transactionId, String accountNumber, Long amount)
-    {
-        List<Account> accountList = accountRepository.findByAccountNumber(accountNumber);
-        if(accountList.size() == 0)
-            throw new AccountException(ErrorCode.ACCOUNT_NOT_FOUND);
-        Account findAccount = accountList.get(0);
+    public Transaction cancelTransaction(String transactionId,
+                                         String accountNumber, Long amount) {
+        Account findAccount =
+                getAccountByUserIdAndAccountNumber(null, accountNumber);
 
         Transaction findTransaction = getTransaction(transactionId);
-        System.out.println(findTransaction.getAmount());
-        System.out.println(findTransaction.getAmount() - amount);
-        if(findTransaction.getAccount().getAccountNumber() != findAccount.getAccountNumber())
+
+        if (findTransaction.getAccount().getAccountNumber() != findAccount.getAccountNumber())
             throw new AccountException(ErrorCode.NOT_MATCH_ACCOUNT_AND_TRANSACTION);
-        else if(findTransaction.getAmount() != amount.longValue())
+        else if (findTransaction.getAmount() != amount.longValue())
             throw new AccountException(ErrorCode.NOT_MATCH_AMOUNT);
-        else if(findTransaction.getTransactedAt().isBefore(LocalDateTime.now().minusYears(1)))
+        else if (findTransaction.getTransactedAt().isBefore(LocalDateTime.now().minusYears(1)))
             throw new AccountException(ErrorCode.OLD_TRANSACTION);
-        else if(findTransaction.getTransactionType() == TransactionType.CANCEL)
+        else if (findTransaction.getTransactionType() == TransactionType.CANCEL)
             throw new AccountException(ErrorCode.CANCELED_TRANSACTION);
 
         findAccount.setBalance(findAccount.getBalance() + findTransaction.getAmount());
@@ -154,41 +162,34 @@ public class AccountService {
         return findTransaction;
     }
 
-    //---------------------------------------Sample Data------------------------------------------------
+    //---------------------Sample Data----------------
     @EventListener(ApplicationReadyEvent.class)
     @Transactional
-    public void initUserData()
-    {
+    public void initUserData() {
         log.info("UserData init");
-        AccountUser user1 = AccountUser.builder()
-                .name("user1")
-                .build();
-        AccountUser user2 = AccountUser.builder()
-                .name("user2")
-                .build();
+        AccountUser user1 = AccountUser.builder().name("user1").build();
+        AccountUser user2 = AccountUser.builder().name("user2").build();
 
         accountUserRepository.save(user1);
         accountUserRepository.save(user2);
     }
 
-    //---------------------------------Private Function----------------------------------------------
-    private String generateAccountNumber()
-    {
+    //-----------Private Function----------
+    private String generateAccountNumber() {
         int leftLimit = Character.valueOf('0');
         int rightLimit = Character.valueOf('9'); // letter 'z'
         int targetStringLength = 10;
         Random random = new Random();
         StringBuilder sb = new StringBuilder(targetStringLength);
         for (int i = 0; i < targetStringLength; i++) {
-            int randomLimitedInt = leftLimit + (int)
-                    (random.nextFloat() * (rightLimit - leftLimit + 1));
+            int randomLimitedInt =
+                    leftLimit + (int) (random.nextFloat() * (rightLimit - leftLimit + 1));
             sb.append((char) randomLimitedInt);
         }
         return sb.toString();
     }
 
-    private String generateUUID()
-    {
-        return UUID.randomUUID().toString();
+    private String generateUUID() {
+        return UUID.randomUUID().toString().replaceAll("-", "");
     }
 }

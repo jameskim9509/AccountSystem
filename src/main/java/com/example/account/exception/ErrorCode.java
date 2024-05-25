@@ -17,7 +17,9 @@ public enum ErrorCode {
     OLD_TRANSACTION("1년이 지난 거래입니다."),
     TRANSACTION_NOT_FOUND("해당하는 거래가 없습니다."),
     USER_NOT_FOUND("사용자가 없습니다."),
-    ARGUMENT_NOT_VALID("잘못된 입력값 입니다.");
+    ARGUMENT_NOT_VALID("잘못된 입력값 입니다."),
+    IN_PROCESSING("처리 중인 계좌 입니다."),
+    JSON_PARSE_ERROR("잘못된 JSON 형식입니다.");
 
     private final String message;
 }

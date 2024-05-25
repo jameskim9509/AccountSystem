@@ -2,10 +2,9 @@ package com.example.account.aop;
 
 import com.example.account.dto.CancelTransactionForm;
 import com.example.account.dto.CreateTransactionForm;
-import com.example.account.service.RedisTestService;
+import com.example.account.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Slf4j
 public class ControllerAspect {
-    private final RedisTestService redisTestService;
+    private final RedisService redisService;
 
     @Pointcut("@annotation(com.example.account.aop.AccountLock)")
     public void lockPointCut() {}
@@ -29,7 +28,7 @@ public class ControllerAspect {
             accountNumber = ((CancelTransactionForm.RequestForm) reqForm).getAccountNumber();
         else return;
 
-        log.info("redisService : {}", redisTestService.getLock(accountNumber));
+        log.info("redisService : {}", redisService.getLock(accountNumber));
     }
 
     @After("lockPointCut() && args(reqForm,..)")
@@ -42,6 +41,6 @@ public class ControllerAspect {
             accountNumber = ((CancelTransactionForm.RequestForm) reqForm).getAccountNumber();
         else return;
 
-        log.info("redisService : {}", redisTestService.releaseLock(accountNumber));
+        log.info("redisService : {}", redisService.releaseLock(accountNumber));
     }
 }

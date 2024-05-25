@@ -11,6 +11,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 public class GetTransactionForm {
+    @Builder
     @Getter
     public static class RequestForm
     {
@@ -18,6 +19,7 @@ public class GetTransactionForm {
         String transactionId;
     }
 
+    @Getter
     @Builder
     @AllArgsConstructor
     public static class ResponseForm

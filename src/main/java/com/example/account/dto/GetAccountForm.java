@@ -8,6 +8,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 public class GetAccountForm {
+    @Builder
     @Getter
     public static class RequestForm
     {
@@ -15,6 +16,7 @@ public class GetAccountForm {
         Long userId;
     }
 
+    @Getter
     @Builder
     @AllArgsConstructor
     public static class ResponseForm

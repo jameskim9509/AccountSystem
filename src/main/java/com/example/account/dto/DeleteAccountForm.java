@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 public class DeleteAccountForm {
+    @Builder
     @Getter
     public static class RequestForm
     {
@@ -19,6 +20,7 @@ public class DeleteAccountForm {
         String accountNumber;
     }
 
+    @Getter
     @Builder
     @AllArgsConstructor
     public static class ResponseForm
