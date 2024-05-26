@@ -31,7 +31,6 @@ public class CreateTransactionForm {
     public static class ResponseForm
     {
         String accountNumber;
-//        String type;
         TransactionResultType transactionResult;
         String transactionId;
         Long amount;

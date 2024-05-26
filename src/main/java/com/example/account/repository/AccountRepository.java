@@ -26,7 +26,9 @@ public class AccountRepository {
 
     public List<Account> findByUserId(Long userId)
     {
-        String jpql = "select a from Account a join a.accountUser u on u.id=:userId";
+        String jpql = "select a " +
+                        "from Account a join a.accountUser u " +
+                        "on u.id=:userId";
         return em.createQuery(jpql, Account.class)
                 .setParameter("userId", userId)
                 .getResultList();
@@ -34,7 +36,9 @@ public class AccountRepository {
 
     public List<Account> findByAccountNumber(String accountNumber)
     {
-        String jpql = "select a from Account a where a.accountNumber=:accountNumber";
+        String jpql = "select a " +
+                        "from Account a " +
+                        "where a.accountNumber=:accountNumber";
         return em.createQuery(jpql, Account.class)
                 .setParameter("accountNumber", accountNumber)
                 .getResultList();
@@ -42,7 +46,9 @@ public class AccountRepository {
 
     public List<Account> findByUserIdAndAccountNumber(Long userId, String accountNumber)
     {
-        String jpql = "select a from Account a join a.accountUser u on u.id=:userId and a.accountNumber=:accountNumber";
+        String jpql = "select a " +
+                        "from Account a join a.accountUser u " +
+                        "on u.id=:userId and a.accountNumber=:accountNumber";
         return em.createQuery(jpql, Account.class)
             .setParameter("userId", userId)
             .setParameter("accountNumber", accountNumber)

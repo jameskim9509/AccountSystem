@@ -22,7 +22,10 @@ public class AccountController {
     @PostMapping("/account")
     public Object createAccount(@RequestBody @Valid CreateAccountForm.RequestForm reqForm)
     {
-        Account createdAccount = accountService.createAccount(reqForm.getUserId(),reqForm.getInitBalance());
+        Account createdAccount =
+                accountService.createAccount(
+                        reqForm.getUserId(),reqForm.getInitBalance()
+                );
         return CreateAccountForm.ResponseForm.builder()
                 .userId(createdAccount.getAccountUser().getId())
                 .accountNumber(createdAccount.getAccountNumber())
@@ -33,7 +36,10 @@ public class AccountController {
     @DeleteMapping("/account")
     public Object unregisterAccount(@RequestBody @Valid DeleteAccountForm.RequestForm reqForm)
     {
-        Account unregisteredAccount = accountService.unregisterAccount(reqForm.getUserId(), reqForm.getAccountNumber());
+        Account unregisteredAccount =
+                accountService.unregisterAccount(
+                        reqForm.getUserId(), reqForm.getAccountNumber()
+                );
         return DeleteAccountForm.ResponseForm.builder()
                 .userId(unregisteredAccount.getAccountUser().getId())
                 .accountNumber(unregisteredAccount.getAccountNumber())
@@ -44,7 +50,8 @@ public class AccountController {
     @GetMapping("/account")
     public List<Object> getAccounts(@ModelAttribute @Validated GetAccountForm.RequestForm reqForm)
     {
-        List<Account> accountList = accountService.getAccountByUserId(reqForm.getUserId());
+        List<Account> accountList =
+                accountService.getAccountByUserId(reqForm.getUserId());
         return accountList.stream()
                 .map(a -> GetAccountForm.ResponseForm.builder()
                         .accountNumber(a.getAccountNumber())
@@ -57,7 +64,10 @@ public class AccountController {
     @PostMapping("/transaction/use")
     public Object createTransaction(@RequestBody @Valid CreateTransactionForm.RequestForm reqForm)
     {
-        Transaction createdTransaction = accountService.createTransaction(reqForm.getUserId(), reqForm.getAccountNumber(), reqForm.getAmount());
+        Transaction createdTransaction =
+                accountService.createTransaction(
+                        reqForm.getUserId(), reqForm.getAccountNumber(), reqForm.getAmount()
+                );
         return CreateTransactionForm.ResponseForm.builder()
                 .accountNumber(createdTransaction.getAccount().getAccountNumber())
                 .transactionResult(createdTransaction.getTransactionResultType())
@@ -71,7 +81,10 @@ public class AccountController {
     @PostMapping("/transaction/cancel")
     public Object cancelTransaction(@RequestBody @Valid CancelTransactionForm.RequestForm reqForm)
     {
-        Transaction canceledTransaction = accountService.cancelTransaction(reqForm.getTransactionId(), reqForm.getAccountNumber(), reqForm.getAmount());
+        Transaction canceledTransaction =
+                accountService.cancelTransaction(
+                        reqForm.getTransactionId(), reqForm.getAccountNumber(), reqForm.getAmount()
+                );
         return CancelTransactionForm.ResponseForm.builder()
                 .accountNumber(canceledTransaction.getAccount().getAccountNumber())
                 .transactionResult(canceledTransaction.getTransactionResultType())
@@ -84,7 +97,8 @@ public class AccountController {
     @GetMapping("/transaction/{transactionId}")
     public Object getTransaction(@ModelAttribute @Validated GetTransactionForm.RequestForm reqForm)
     {
-        Transaction findTransaction = accountService.getTransaction(reqForm.getTransactionId());
+        Transaction findTransaction =
+                accountService.getTransaction(reqForm.getTransactionId());
         return GetTransactionForm.ResponseForm.builder()
                 .accountNumber(findTransaction.getAccount().getAccountNumber())
                 .transactionType(findTransaction.getTransactionType())

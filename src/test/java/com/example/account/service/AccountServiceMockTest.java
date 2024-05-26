@@ -37,12 +37,6 @@ class AccountServiceMockTest {
     @InjectMocks
     private AccountService accountService;
 
-//    @BeforeEach
-//    void dataInit()
-//    {
-//
-//    }
-
     @Test
     @DisplayName("계좌 생성 성공")
     void createAccountTest() {
@@ -60,19 +54,32 @@ class AccountServiceMockTest {
         given(accountUserRepository.findById(1L)).willReturn(user1);
         given(accountRepository.findByUserId(1L))
                 .willReturn(new ArrayList<>());
-        ArgumentCaptor<Account> accountCaptor = ArgumentCaptor.forClass(Account.class);
+        ArgumentCaptor<Account> accountCaptor =
+                ArgumentCaptor.forClass(Account.class);
 
         //when
         accountService.createAccount(userId, initBalance);
 
         //then
-        verify(accountUserRepository, times(2)).findById(anyLong());
-        verify(accountRepository, times(1)).findByUserId(anyLong());
-        verify(accountRepository, times(1)).save(accountCaptor.capture());
+        verify(accountUserRepository, times(2))
+                .findById(anyLong());
+        verify(accountRepository, times(1))
+                .findByUserId(anyLong());
+        verify(accountRepository, times(1))
+                .save(accountCaptor.capture());
         Account createdAccount = accountCaptor.getValue();
-        assertEquals(createdAccount.getAccountUser(), expectedAccount.getAccountUser());
-        assertEquals(createdAccount.getAccountStatus(), expectedAccount.getAccountStatus());
-        assertEquals(createdAccount.getBalance(), expectedAccount.getBalance());
+        assertEquals(
+                createdAccount.getAccountUser(),
+                expectedAccount.getAccountUser()
+        );
+        assertEquals(
+                createdAccount.getAccountStatus(),
+                expectedAccount.getAccountStatus()
+        );
+        assertEquals(
+                createdAccount.getBalance(),
+                expectedAccount.getBalance()
+        );
     }
 
     @Test
@@ -90,7 +97,10 @@ class AccountServiceMockTest {
                 .build();
         given(accountUserRepository.findById(1L)).willReturn(user1);
         given(accountRepository
-                .findByUserIdAndAccountNumber(1L, "0123456789"))
+                .findByUserIdAndAccountNumber(
+                        1L,
+                        "0123456789"
+                ))
                 .willReturn(List.of(account1));
 
         //when
@@ -103,7 +113,10 @@ class AccountServiceMockTest {
         verify(accountRepository, times(1))
                 .findByUserIdAndAccountNumber(anyLong(), any());
 
-        assertEquals(unregisteredAccount.getAccountStatus(), AccountStatus.UNREGISTERED);
+        assertEquals(
+                unregisteredAccount.getAccountStatus(),
+                AccountStatus.UNREGISTERED
+        );
     }
 
     @Test
@@ -117,17 +130,27 @@ class AccountServiceMockTest {
                 .willReturn(user1);
         given(accountRepository.findByUserId(1L))
                 .willReturn(List.of(
-                                Account.builder().accountStatus(AccountStatus.IN_USE).build(),
-                                Account.builder().accountStatus(AccountStatus.IN_USE).build(),
-                                Account.builder().accountStatus(AccountStatus.UNREGISTERED).build()
+                                Account.builder()
+                                        .accountStatus(AccountStatus.IN_USE)
+                                        .build(),
+                                Account.builder()
+                                        .accountStatus(AccountStatus.IN_USE)
+                                        .build(),
+                                Account.builder()
+                                        .accountStatus(
+                                                AccountStatus.UNREGISTERED
+                                        )
+                                        .build()
                         )
                 );
 
         List<Account> accountList = accountService.getAccountByUserId(1L);
 
         //then
-        verify(accountUserRepository, times(1)).findById(any());
-        verify(accountRepository, times(1)).findByUserId(any());
+        verify(accountUserRepository, times(1))
+                .findById(any());
+        verify(accountRepository, times(1))
+                .findByUserId(any());
         assertEquals(accountList.size(), 2);
     }
 
@@ -146,12 +169,20 @@ class AccountServiceMockTest {
                 .build();
         given(accountUserRepository.findById(1L)).willReturn(user1);
         given(accountRepository
-                .findByUserIdAndAccountNumber(1L, "0123456789"))
+                .findByUserIdAndAccountNumber(
+                        1L,
+                        "0123456789"
+                ))
                 .willReturn(List.of(account1));
-        ArgumentCaptor<Transaction> transactionCaptor = ArgumentCaptor.forClass(Transaction.class);
+        ArgumentCaptor<Transaction> transactionCaptor =
+                ArgumentCaptor.forClass(Transaction.class);
 
         //when
-        accountService.createTransaction(1L, "0123456789", 1000L);
+        accountService.createTransaction(
+                1L,
+                "0123456789",
+                1000L
+        );
 
         //then
         verify(accountUserRepository, times(1))
@@ -196,7 +227,11 @@ class AccountServiceMockTest {
 
         //when
         Transaction canceledTransaction = accountService
-                .cancelTransaction("abcd", "1234", 1000L);
+                .cancelTransaction(
+                        "abcd",
+                        "1234",
+                        1000L
+                );
 
         //then
         verify(accountRepository, times(1))
@@ -206,7 +241,10 @@ class AccountServiceMockTest {
 
         assertEquals(canceledTransaction.getTransactionId(), "abcd");
         assertEquals(canceledTransaction.getAccount(), account1);
-        assertEquals(canceledTransaction.getTransactionType(), TransactionType.CANCEL);
+        assertEquals(
+                canceledTransaction.getTransactionType(),
+                TransactionType.CANCEL
+        );
         assertEquals(canceledTransaction.getAmount(), 1000L);
     }
 
@@ -229,9 +267,15 @@ class AccountServiceMockTest {
                 .getTransaction("abcdefghijklmn");
 
         //then
-        assertEquals(findTransaction.getTransactionId(), "abcdefghijklmn");
+        assertEquals(
+                findTransaction.getTransactionId(),
+                "abcdefghijklmn"
+        );
         assertEquals(findTransaction.getAmount(), 1000L);
-        assertEquals(findTransaction.getTransactionResultType(), TransactionResultType.S);
+        assertEquals(
+                findTransaction.getTransactionResultType(),
+                TransactionResultType.S
+        );
     }
 
     @Test
@@ -242,10 +286,16 @@ class AccountServiceMockTest {
 
         AccountException ex =
                 assertThrows(AccountException.class,
-                        () -> accountService.createAccount(1L, 1000L));
+                        () -> accountService.createAccount(
+                                1L,
+                                1000L
+                        ));
         assertEquals(ErrorCode.USER_NOT_FOUND, ex.getErrorCode());
 
-        verify(accountUserRepository, times(1)).findById(anyLong());
+        verify(
+                accountUserRepository,
+                times(1)).findById(anyLong()
+        );
     }
 
     @Test
@@ -295,7 +345,11 @@ class AccountServiceMockTest {
 
         AccountException ex
                 = assertThrows(AccountException.class,
-                () -> accountService.getAccountByUserIdAndAccountNumber(null, "1234"));
+                () -> accountService
+                        .getAccountByUserIdAndAccountNumber(
+                                null,
+                                "1234"
+                        ));
         assertEquals(ErrorCode.ACCOUNT_NOT_FOUND, ex.getErrorCode());
     }
 
@@ -312,8 +366,11 @@ class AccountServiceMockTest {
                 );
 
         AccountException ex = assertThrows(AccountException.class,
-                () -> accountService.getAccountByUserIdAndAccountNumber(null,
-                        "1234"));
+                () -> accountService
+                        .getAccountByUserIdAndAccountNumber(
+                                null,
+                                "1234"
+                        ));
         assertEquals(ErrorCode.UNREGISTERED_ACCOUNT, ex.getErrorCode());
     }
 
@@ -323,12 +380,6 @@ class AccountServiceMockTest {
     {
         given(accountUserRepository.findById(anyLong()))
                 .willReturn(AccountUser.builder().build());
-        given(accountRepository.findByUserId(anyLong()))
-                .willReturn(
-                        List.of(
-                                Account.builder().build()
-                        )
-                );
         given(accountRepository.findByUserIdAndAccountNumber(any(), any()))
                 .willReturn(
                         List.of(
@@ -339,7 +390,8 @@ class AccountServiceMockTest {
                 );
 
         AccountException ex = assertThrows(AccountException.class,
-                () -> accountService.unregisterAccount(1L, "1234"));
+                () -> accountService
+                        .unregisterAccount(1L, "1234"));
         assertEquals(ErrorCode.FOUND_BALANCE, ex.getErrorCode());
     }
 
@@ -357,16 +409,10 @@ class AccountServiceMockTest {
 
     @DisplayName("NOT_ENOUGH_BALANCE 확인")
     @Test
-    void NotEnoughBalanceTest()
+    void NotEnoughBalanceExceptionTest()
     {
         given(accountUserRepository.findById(anyLong()))
                 .willReturn(AccountUser.builder().build());
-        given(accountRepository.findByUserId(anyLong()))
-                .willReturn(
-                        List.of(
-                                Account.builder().build()
-                        )
-                );
         given(accountRepository.findByUserIdAndAccountNumber(any(), any()))
                 .willReturn(
                         List.of(
@@ -376,8 +422,15 @@ class AccountServiceMockTest {
                         )
                 );
 
-        AccountException ex = assertThrows(AccountException.class,
-                () -> accountService.createTransaction(1L,"1234", 1000L));
+        AccountException ex = assertThrows(
+                AccountException.class,
+                () -> accountService
+                        .createTransaction(
+                                1L,
+                                "1234",
+                                1000L
+                        )
+        );
         assertEquals(ErrorCode.NOT_ENOUGH_BALANCE, ex.getErrorCode());
     }
 
@@ -406,9 +459,19 @@ class AccountServiceMockTest {
                         )
                 );
 
-        AccountException ex = assertThrows(AccountException.class,
-                () -> accountService.cancelTransaction("1234","123456", 1000L));
-        assertEquals(ErrorCode.NOT_MATCH_ACCOUNT_AND_TRANSACTION, ex.getErrorCode());
+        AccountException ex = assertThrows(
+                AccountException.class,
+                () -> accountService
+                        .cancelTransaction(
+                                "1234",
+                                "123456",
+                                1000L
+                        )
+        );
+        assertEquals(
+                ErrorCode.NOT_MATCH_ACCOUNT_AND_TRANSACTION,
+                ex.getErrorCode()
+        );
     }
 
     @DisplayName("NOT_MATCH_AMOUNT 확인")
@@ -438,7 +501,12 @@ class AccountServiceMockTest {
                 );
 
         AccountException ex = assertThrows(AccountException.class,
-                () -> accountService.cancelTransaction("1234","123456", 1000L));
+                () -> accountService
+                        .cancelTransaction(
+                                "1234",
+                                "123456",
+                                1000L
+                        ));
         assertEquals(ErrorCode.NOT_MATCH_AMOUNT, ex.getErrorCode());
     }
 
@@ -465,13 +533,21 @@ class AccountServiceMockTest {
                                                         .build()
                                         )
                                         .amount(1000L)
-                                        .transactedAt(LocalDateTime.now().minusYears(2))
+                                        .transactedAt(LocalDateTime.now()
+                                                .minusYears(2))
                                         .build()
                         )
                 );
 
-        AccountException ex = assertThrows(AccountException.class,
-                () -> accountService.cancelTransaction("1234","123456", 1000L));
+        AccountException ex = assertThrows(
+                AccountException.class,
+                () -> accountService
+                        .cancelTransaction(
+                                "1234",
+                                "123456",
+                                1000L
+                        )
+        );
         assertEquals(ErrorCode.OLD_TRANSACTION, ex.getErrorCode());
     }
 
@@ -503,8 +579,15 @@ class AccountServiceMockTest {
                         )
                 );
 
-        AccountException ex = assertThrows(AccountException.class,
-                () -> accountService.cancelTransaction("1234","123456", 1000L));
+        AccountException ex = assertThrows(
+                AccountException.class,
+                () -> accountService
+                        .cancelTransaction(
+                                "1234",
+                                "123456",
+                                1000L
+                        )
+        );
         assertEquals(ErrorCode.CANCELED_TRANSACTION, ex.getErrorCode());
     }
 }

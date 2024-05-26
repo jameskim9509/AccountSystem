@@ -19,13 +19,18 @@ public class RedisService {
     public String getLock(String accountNumber) {
         RLock lock = redissonClient.getLock(accountNumber);
         try {
-            boolean isLock = lock.tryLock(1, 100, TimeUnit.SECONDS);
+            boolean isLock =
+                    lock.tryLock(1, 100, TimeUnit.SECONDS);
             if (!isLock) {
-                return "Lock failed";
+                throw new AccountException(ErrorCode.IN_PROCESSING);
             }
-        } catch (Exception e) {
-            log.error("Redis lock failed");
-            throw new AccountException(ErrorCode.IN_PROCESSING);
+        } catch (AccountException e) {
+            log.error("Lock failed");
+            throw e;
+        }
+        catch (Exception e)
+        {
+            log.error("try_lock Exception");
         }
         return "getLock";
     }

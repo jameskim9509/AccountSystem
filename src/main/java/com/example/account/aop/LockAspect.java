@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Aspect
 @Slf4j
-public class ControllerAspect {
+public class LockAspect {
     private final RedisService redisService;
 
     @Pointcut("@annotation(com.example.account.aop.AccountLock)")
@@ -23,9 +23,11 @@ public class ControllerAspect {
     {
         String accountNumber = "";
         if(reqForm instanceof CreateTransactionForm.RequestForm)
-            accountNumber = ((CreateTransactionForm.RequestForm) reqForm).getAccountNumber();
+            accountNumber =
+                    ((CreateTransactionForm.RequestForm) reqForm).getAccountNumber();
         else if(reqForm instanceof CancelTransactionForm.RequestForm)
-            accountNumber = ((CancelTransactionForm.RequestForm) reqForm).getAccountNumber();
+            accountNumber =
+                    ((CancelTransactionForm.RequestForm) reqForm).getAccountNumber();
         else return;
 
         log.info("redisService : {}", redisService.getLock(accountNumber));
@@ -36,9 +38,11 @@ public class ControllerAspect {
     {
         String accountNumber;
         if(reqForm instanceof CreateTransactionForm.RequestForm)
-            accountNumber = ((CreateTransactionForm.RequestForm) reqForm).getAccountNumber();
+            accountNumber =
+                    ((CreateTransactionForm.RequestForm) reqForm).getAccountNumber();
         else if(reqForm instanceof CancelTransactionForm.RequestForm)
-            accountNumber = ((CancelTransactionForm.RequestForm) reqForm).getAccountNumber();
+            accountNumber =
+                    ((CancelTransactionForm.RequestForm) reqForm).getAccountNumber();
         else return;
 
         log.info("redisService : {}", redisService.releaseLock(accountNumber));

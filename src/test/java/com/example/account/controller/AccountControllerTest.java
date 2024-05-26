@@ -310,7 +310,9 @@ class AccountControllerTest {
     @Test
     void UnregisteredAccountTest() throws Exception {
         given(accountService.unregisterAccount(anyLong(), any()))
-                .willThrow(new AccountException(ErrorCode.UNREGISTERED_ACCOUNT));
+                .willThrow(
+                        new AccountException(ErrorCode.UNREGISTERED_ACCOUNT)
+                );
 
         String jsonRequest = objectMapper.writeValueAsString(
                 DeleteAccountForm.RequestForm.builder()
@@ -377,7 +379,11 @@ class AccountControllerTest {
     @Test
     void NotMatchAccountAndTransactionTest() throws Exception {
         given(accountService.cancelTransaction(any(), any(), anyLong()))
-                .willThrow(new AccountException(ErrorCode.NOT_MATCH_ACCOUNT_AND_TRANSACTION));
+                .willThrow(
+                        new AccountException(
+                                ErrorCode.NOT_MATCH_ACCOUNT_AND_TRANSACTION
+                        )
+                );
 
         String jsonRequest = objectMapper.writeValueAsString(
                 CancelTransactionForm.RequestForm.builder()
@@ -446,7 +452,9 @@ class AccountControllerTest {
     @Test
     void CanceledTransactionTest() throws Exception {
         given(accountService.cancelTransaction(any(), any(), anyLong()))
-                .willThrow(new AccountException(ErrorCode.CANCELED_TRANSACTION));
+                .willThrow(new AccountException(
+                        ErrorCode.CANCELED_TRANSACTION
+                ));
 
         String jsonRequest = objectMapper.writeValueAsString(
                 CancelTransactionForm.RequestForm.builder()

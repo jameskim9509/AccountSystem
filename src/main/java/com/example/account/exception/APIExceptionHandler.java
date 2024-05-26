@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestControllerAdvice(annotations = RestController.class, basePackages = "com.example.account.controller")
+@RestControllerAdvice(
+        annotations = RestController.class, basePackages = "com.example.account.controller"
+)
 public class APIExceptionHandler {
 
     @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
@@ -35,7 +37,9 @@ public class APIExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageConversionException.class)
-    public ErrorResponse handleHttpMessageConversionException(HttpMessageConversionException e)
+    public ErrorResponse handleHttpMessageConversionException(
+            HttpMessageConversionException e
+    )
     {
         return ErrorResponse.builder()
                 .code(ErrorCode.JSON_PARSE_ERROR)
