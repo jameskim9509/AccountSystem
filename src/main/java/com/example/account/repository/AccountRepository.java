@@ -44,7 +44,10 @@ public class AccountRepository {
                 .getResultList();
     }
 
-    public List<Account> findByUserIdAndAccountNumber(Long userId, String accountNumber)
+    public List<Account> findByUserIdAndAccountNumber(
+            Long userId,
+            String accountNumber
+    )
     {
         String jpql = "select a " +
                         "from Account a join a.accountUser u " +

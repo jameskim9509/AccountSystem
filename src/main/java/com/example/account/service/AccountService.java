@@ -1,7 +1,8 @@
 package com.example.account.service;
 
 import com.example.account.domain.*;
-import com.example.account.exception.*;
+import com.example.account.exception.AccountException;
+import com.example.account.exception.ErrorCode;
 import com.example.account.repository.AccountRepository;
 import com.example.account.repository.AccountUserRepository;
 import com.example.account.repository.TransactionRepository;
@@ -13,7 +14,10 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -38,8 +42,8 @@ public class AccountService {
                 .accountStatus(AccountStatus.IN_USE)
                 .balance(initBalance)
                 .registeredAt(LocalDateTime.now())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+//                .createdAt(LocalDateTime.now())
+//                .updatedAt(LocalDateTime.now())
                 .build();
         return accountRepository.save(account);
     }
@@ -63,8 +67,10 @@ public class AccountService {
     }
 
     @Transactional
-    public Account getAccountByUserIdAndAccountNumber(Long userId,
-                                                      String accountNumber)
+    public Account getAccountByUserIdAndAccountNumber(
+            Long userId,
+            String accountNumber
+    )
     {
         List<Account> accountList = new ArrayList<>();
         if(userId == null)
@@ -84,7 +90,11 @@ public class AccountService {
     }
 
     @Transactional
-    public Account unregisterAccount(Long userId, String accountNumber) {
+    public Account unregisterAccount(
+            Long userId,
+            String accountNumber
+    )
+    {
         getAccountUser(userId);
 
         Account findAccount =
@@ -95,7 +105,7 @@ public class AccountService {
 
         findAccount.setAccountStatus(AccountStatus.UNREGISTERED);
         findAccount.setUnregisteredAt(LocalDateTime.now());
-        findAccount.setUpdatedAt(LocalDateTime.now());
+//        findAccount.setUpdatedAt(LocalDateTime.now());
         return findAccount;
     }
 
@@ -111,8 +121,11 @@ public class AccountService {
     }
 
     @Transactional
-    public Transaction createTransaction(Long userId, String accountNumber,
-                                         Long amount) {
+    public Transaction createTransaction(
+            Long userId,
+            String accountNumber,
+            Long amount)
+    {
         getAccountUser(userId);
 
         Account findAccount =
@@ -131,8 +144,8 @@ public class AccountService {
                 .balanceSnapshot(findAccount.getBalance() + amount)
                 .transactionId(generateUUID())
                 .transactedAt(LocalDateTime.now())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+//                .createdAt(LocalDateTime.now())
+//                .updatedAt(LocalDateTime.now())
                 .build();
 
         transactionRepository.save(transaction);
@@ -140,8 +153,12 @@ public class AccountService {
     }
 
     @Transactional
-    public Transaction cancelTransaction(String transactionId,
-                                         String accountNumber, Long amount) {
+    public Transaction cancelTransaction(
+            String transactionId,
+            String accountNumber,
+            Long amount
+    )
+    {
         Account findAccount =
                 getAccountByUserIdAndAccountNumber(null, accountNumber);
 
@@ -158,7 +175,7 @@ public class AccountService {
 
         findAccount.setBalance(findAccount.getBalance() + findTransaction.getAmount());
         findTransaction.setTransactionType(TransactionType.CANCEL);
-        findTransaction.setUpdatedAt(LocalDateTime.now());
+//        findTransaction.setUpdatedAt(LocalDateTime.now());
         return findTransaction;
     }
 
