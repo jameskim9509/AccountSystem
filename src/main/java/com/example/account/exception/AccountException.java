@@ -1,5 +1,6 @@
 package com.example.account.exception;
 
+import com.example.account.type.ErrorCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

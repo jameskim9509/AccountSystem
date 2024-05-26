@@ -1,5 +1,7 @@
 package com.example.account.domain;
 
+import com.example.account.type.TransactionResultType;
+import com.example.account.type.TransactionType;
 import lombok.*;
 
 import javax.persistence.*;

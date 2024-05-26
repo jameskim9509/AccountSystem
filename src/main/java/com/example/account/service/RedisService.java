@@ -1,7 +1,7 @@
 package com.example.account.service;
 
 import com.example.account.exception.AccountException;
-import com.example.account.exception.ErrorCode;
+import com.example.account.type.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;

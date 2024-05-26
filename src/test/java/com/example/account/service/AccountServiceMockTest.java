@@ -2,10 +2,13 @@ package com.example.account.service;
 
 import com.example.account.domain.*;
 import com.example.account.exception.AccountException;
-import com.example.account.exception.ErrorCode;
+import com.example.account.type.AccountStatus;
+import com.example.account.type.ErrorCode;
 import com.example.account.repository.AccountRepository;
 import com.example.account.repository.AccountUserRepository;
 import com.example.account.repository.TransactionRepository;
+import com.example.account.type.TransactionResultType;
+import com.example.account.type.TransactionType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

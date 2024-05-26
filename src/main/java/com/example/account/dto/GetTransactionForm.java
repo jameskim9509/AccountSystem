@@ -1,7 +1,7 @@
 package com.example.account.dto;
 
-import com.example.account.domain.TransactionResultType;
-import com.example.account.domain.TransactionType;
+import com.example.account.type.TransactionResultType;
+import com.example.account.type.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

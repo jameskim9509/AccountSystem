@@ -1,7 +1,7 @@
 package com.example.account.service;
 
 import com.example.account.exception.AccountException;
-import com.example.account.exception.ErrorCode;
+import com.example.account.type.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,7 +58,7 @@ public class RedisServiceTest {
 
     @DisplayName("lock 해제 성공")
     @Test
-    void releaseLock() throws InterruptedException {
+    void releaseLock() {
         given(redissonClient.getLock(any()))
                 .willReturn(lock);
 

@@ -1,5 +1,6 @@
 package com.example.account.domain;
 
+import com.example.account.type.AccountStatus;
 import lombok.*;
 
 import javax.persistence.*;

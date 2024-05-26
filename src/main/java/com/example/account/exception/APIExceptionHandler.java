@@ -1,5 +1,7 @@
 package com.example.account.exception;
 
+import com.example.account.dto.ErrorResponse;
+import com.example.account.type.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.validation.BindException;
