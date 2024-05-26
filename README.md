@@ -15,11 +15,11 @@
 4. Junit5를 통한 각각의 상황에 대한 단위 테스트 (by Mock Object)
 5. Controller, Service, Repository의 Layered Architecture를 통한 비즈니스 로직 처리
 
-- Spring boot Application 개발 환경
-intellij IDE
-내장 tomcat
-내장 h2 Database
-Postman
+- Spring boot Application 개발 환경<br>
+intellij IDE <br>
+내장 tomcat <br>
+내장 h2 Database <br>
+Postman <br>
 
 - 패키지 구조 <br>
 aop : 락을 이용한 거래 중복 방지시 AOP 관련 코드 <br>
