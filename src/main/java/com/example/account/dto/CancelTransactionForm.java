@@ -4,6 +4,7 @@ import com.example.account.type.TransactionResultType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -13,6 +14,8 @@ import java.time.LocalDateTime;
 public class CancelTransactionForm {
     @Builder
     @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class RequestForm
     {
         @NotBlank
@@ -26,6 +29,7 @@ public class CancelTransactionForm {
     @Getter
     @Builder
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class ResponseForm
     {
         String accountNumber;

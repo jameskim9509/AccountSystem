@@ -5,6 +5,7 @@ import com.example.account.type.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
@@ -12,6 +13,8 @@ import java.time.LocalDateTime;
 public class GetTransactionForm {
     @Builder
     @Getter
+    @AllArgsConstructor
+//    @NoArgsConstructor
     public static class RequestForm
     {
         @NotBlank
@@ -21,6 +24,7 @@ public class GetTransactionForm {
     @Getter
     @Builder
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class ResponseForm
     {
         String accountNumber;

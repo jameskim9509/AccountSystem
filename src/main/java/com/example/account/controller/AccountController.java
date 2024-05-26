@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 public class AccountController {
     private final AccountService accountService;
 
-    @ResponseBody
     @PostMapping("/account")
     public Object createAccount(
             @RequestBody @Valid CreateAccountForm.RequestForm reqForm
