@@ -37,5 +37,5 @@ type : 에러코드 및 Enum 타입 관련 코드 <br>
 <br>
 
 - POSTMAN 사용 예 <br>
-<img src = "/use_case_1.PNG">
+<img src = "/use_case_1.PNG" width="500" height="700">
 <br>
