@@ -21,13 +21,21 @@ intellij IDE
 내장 h2 Database
 Postman
 
-- 패키지 구조
-aop : 락을 이용한 거래 중복 방지시 AOP 관련 코드
-config : Redis 서버 환경 구성 정보 관련 코드
-controller : RestController를 통한 다양한 요청(get, post, delete)에 대한 json 응답 코드
-domain : transaction 테이블, user 테이블, account 테이블 등 엔티티 관련 코드
-dto : controller 요청 및 응답 처리시 전달 객제(Data Transfer Object) 관련 코드
-exception : 커스텀 예외 및 예외 처리 핸들러 관련 코드
-repository : DB연결 및 정보 저장, 수정 코드
-service : 비즈니스 로직과 관련한 코드
-type : 에러코드 및 Enum 타입 관련 코드
+- 패키지 구조 <br>
+aop : 락을 이용한 거래 중복 방지시 AOP 관련 코드 <br>
+config : Redis 서버 환경 구성 정보 관련 코드 <br>
+controller : RestController를 통한 다양한 요청(get, post, delete)에 대한 json 응답 코드 <br>
+domain : transaction 테이블, user 테이블, account 테이블 등 엔티티 관련 코드 <br>
+dto : controller 요청 및 응답 처리시 전달 객제(Data Transfer Object) 관련 코드 <br>
+exception : 커스텀 예외 및 예외 처리 핸들러 관련 코드 <br>
+repository : DB연결 및 정보 저장, 수정 코드 <br>
+service : 비즈니스 로직과 관련한 코드 <br>
+type : 에러코드 및 Enum 타입 관련 코드 <br>
+
+- DB 테이블 <br>
+<img src = "DB_capture.png">
+<br>
+
+- POSTMAN 사용 예 <br>
+<img src = "use_cas_1.png">
+<br>
