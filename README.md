@@ -33,9 +33,9 @@ service : 비즈니스 로직과 관련한 코드 <br>
 type : 에러코드 및 Enum 타입 관련 코드 <br>
 
 - DB 테이블 <br>
-<img src = "DB_capture.png">
+<img src = "./DB_capture.png">
 <br>
 
 - POSTMAN 사용 예 <br>
-<img src = "use_cas_1.png">
+<img src = "./use_case_1.png">
 <br>
